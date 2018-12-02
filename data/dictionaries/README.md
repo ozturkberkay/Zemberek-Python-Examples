@@ -1,5 +1,5 @@
 # Zemberek Dictionary Data
-> You can utilize [the official wiki](https://github.com/ahmetaa/zemberek-nlp/wiki/Text-Dictionary-Rules) to create your own lexicon and implement it using the commented example found in: 
+> You can utilize [the official wiki](https://github.com/ahmetaa/zemberek-nlp/wiki/Text-Dictionary-Rules) to create your own lexicon and save it in this folder.
 
 ## Usage
 
