@@ -1,0 +1,2 @@
+# Zemberek Classification Data
+> Download the classification data files from [the official Zemberek Drive folder](https://drive.google.com/drive/folders/1JBPExAeRctAXL2oGW2U6CbqfwIJ84BG7?usp=sharing) and put the contents in this folder.

@@ -1,0 +1,2 @@
+# Zemberek Normalization Data
+> Download the normalization data files from [the official Zemberek Drive folder](https://drive.google.com/drive/folders/1jNT6BJoEbiLuVbQwBYdVNoibEdzDd2WC?usp=sharing) and put the contents in this folder.
