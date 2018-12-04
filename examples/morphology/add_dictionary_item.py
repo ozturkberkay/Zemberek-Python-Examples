@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# Java Code: https://github.com/ahmetaa/zemberek-nlp/blob/master/examples/src/main/java/zemberek/examples/morphology/AddNewDictionaryItem.java
+## Zemberek: Adding Dictionary Item Example 
+# Java Code Example: https://github.com/ahmetaa/zemberek-nlp/blob/master/examples/src/main/java/zemberek/examples/morphology/AddNewDictionaryItem.java
 
 import jpype as jp
 
