@@ -34,7 +34,7 @@ def test (inp, newItem):
 	after = morphology.analyze(inp)
 	printResults(after)
 
-# Printing the resutls...
+# Printing the results...
 def printResults (results):
 	i = 1
 	if not results: print('No Analysis.')
