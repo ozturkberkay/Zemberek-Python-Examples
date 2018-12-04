@@ -3,8 +3,8 @@
 import jpype as jp
 
 ## Zemberek: Simple Classification Example
-# Documentation: https://github.com/ahmetaa/zemberek-nlp/tree/master/morphology#ambiguity-resolution
-# Java Code Example: https://github.com/ahmetaa/zemberek-nlp/tree/master/classification
+# Documentation: https://github.com/ahmetaa/zemberek-nlp/tree/master/classification
+# Java Code Example: https://github.com/ahmetaa/zemberek-nlp/blob/master/examples/src/main/java/zemberek/examples/classification/SimpleClassification.java
 # fastText Documentation: https://fasttext.cc/docs/en/support.html
 
 # Relative path to Zemberek .jar
