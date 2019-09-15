@@ -1,6 +1,8 @@
 # Zemberek Python Examples
 > Zemberek Turkish NLP examples written in Python using the JPype package.
 
+:exclamation: **Requires Zemberek 0.16! 0.17 update with new features and fixes are coming soon!**
+
  Zemberek is a Java-based, natural language processing (NLP) tool, created for the Turkish language. This repository contains a bunch of Python implementations of the [official Zemberek examples](https://github.com/ahmetaa/zemberek-nlp/tree/master/examples/src/main/java/zemberek/examples) for learning purposes. 
  
 ## Installation
@@ -11,7 +13,7 @@
     pip install JPype1
     ```
 
- 2. Download all the data and the latest distribution of Zemberek from [the official Zemberek Drive folder](https://drive.google.com/drive/folders/0B9TrB39LQKZWSjNKdVcwWUxxUm8?usp=sharing) and put the files in the corresponding folders:
+ 2. Download all the data and the **version 0.16** distribution of Zemberek from [the official Zemberek Drive folder](https://drive.google.com/drive/folders/0B9TrB39LQKZWSjNKdVcwWUxxUm8?usp=sharing) and put the files in the corresponding folders:
     
         .
         +-- bin
