@@ -32,10 +32,10 @@ if __name__ == '__main__':
     words: List[str] = ['Ankar\'yya', 'bugn', 'gidyorum']
 
     for word in words:
-        print((
-            f'{word}:'
+        print(
+            f'\n{word}:'
             f' {"Correct" if spell_checker.check(JString(word)) else "Wrong"}'
-        ))
+        )
 
     for word in words:
         suggestions = spell_checker.suggestForWord(JString(word))
