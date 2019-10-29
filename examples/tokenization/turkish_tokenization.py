@@ -23,10 +23,12 @@ if __name__ == '__main__':
 
     tokenizer: TurkishTokenizer = TurkishTokenizer.DEFAULT
 
+    inp: str = 'İstanbul\'a, merhaba!'
+
     print('\nToken Iterator Example:\n')
 
-    inp: str = 'İstanbul\'a, merhaba!'
-    print(f'Input = {inp}')
+    print(f'Input = {inp}\n')
+    
     token_iterator = tokenizer.getTokenIterator(JString(inp))
     for token in token_iterator:
         print((
@@ -41,10 +43,10 @@ if __name__ == '__main__':
     print('Default Tokenization Example:\n')
 
     tokenizer: TurkishTokenizer = TurkishTokenizer.DEFAULT
-    inp: str = 'İstanbul\'a, merhaba!'
+
     print(f'Input = {inp}')
     for i, token in enumerate(tokenizer.tokenizeToStrings(
-        JString('İstanbul\'a, merhaba!')
+        JString(inp)
     )):
         print(f' | Token String {i} = {token}')
 
