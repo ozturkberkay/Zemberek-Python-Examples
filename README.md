@@ -80,7 +80,7 @@ Zemberek is a Java-based natural language processing (NLP) tool created for the 
 
 ## Changelog
 
--   30.10.2019
+-   29.10.2019
     -   Zemberek 0.17.1 update.
     -   JPype 0.7.0 update.
     -   Code style changes.
