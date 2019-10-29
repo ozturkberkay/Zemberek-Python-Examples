@@ -1,79 +1,63 @@
-# -*- coding: utf-8 -*-
+"""
+Zemberek: Turkish Tokenization Example
+Java Code Example: https://bit.ly/2PsLOkj
+"""
 
-import jpype as jp
+from os.path import join
 
-## Zemberek: Tokenization Example
-# Documentation: https://github.com/ahmetaa/zemberek-nlp/tree/master/tokenization
-# Java Code Example: https://github.com/ahmetaa/zemberek-nlp/blob/master/examples/src/main/java/zemberek/examples/tokenization/TurkishTokenizationExample.java
+from jpype import JClass, JString, getDefaultJVMPath, shutdownJVM, startJVM
 
-# Relative path to Zemberek .jar
-ZEMBEREK_PATH = '../../bin/zemberek-full.jar'
+if __name__ == '__main__':
 
-# Start the JVM
-jp.startJVM(jp.getDefaultJVMPath(), "-ea", "-Djava.class.path=%s" % (ZEMBEREK_PATH))
+    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
 
-# Import required Java classes
-TurkishTokenizer = jp.JClass('zemberek.tokenization.TurkishTokenizer')
-TurkishLexer = jp.JClass('zemberek.tokenization.antlr.TurkishLexer')
-
-# There are static instances provided for common use:
-    # DEFAULT tokenizer ignores most white spaces (space, tab, line feed and carriage return).
-    # ALL tokenizer tokenizes everything.
-tokenizer = TurkishTokenizer.DEFAULT
-
-# A dummy data to work on
-dummy = "Prof. Dr. Veli Davul açıklama yaptı. Kimse %6.5'lik enflasyon oranını beğenmemiş!"
-
-# Creating the TokenIterator instance
-tokenIterator = tokenizer.getTokenIterator(dummy)
-
-print('\n####### Basic Tokenization Using The Token Iterator #######\n')
-
-# Iterating through the tokens using the TokenIterator instance
-while (tokenIterator.hasNext()):
-
-    # Setting the current token
-    token = tokenIterator.token
-    
-    # Printing the token information
-    print('Token = ' + str(token.getText()) 
-        + ' | Type (Raw) = ' + str(token.getType()) 
-        + ' | Type (Lexer) = ' + TurkishLexer.VOCABULARY.getDisplayName(token.getType()) 
-        + ' | Start Index = ' + str(token.getStartIndex()) 
-        + ' | Ending Index = ' + str(token.getStopIndex())
+    startJVM(
+        getDefaultJVMPath(),
+        '-ea',
+        f'-Djava.class.path={ZEMBEREK_PATH}',
+        convertStrings=False
     )
 
-################################################################################
+    TurkishTokenizer: JClass = JClass('zemberek.tokenization.TurkishTokenizer')
+    Token: JClass = JClass('zemberek.tokenization.Token')
 
-# Available token types:
-    #    Abbreviation = 1; SpaceTab = 2; NewLine = 3; Time = 4; Date = 5; PercentNumeral = 6; Number = 7; URL = 8;
-    #    Email = 9; HashTag = 10; Mention = 11; MetaTag = 12; Emoticon = 13; RomanNumeral = 14; AbbreviationWithDots = 15;
-    #    Word = 16; WordAlphanumerical = 17; WordWithSymbol = 18; Punctuation = 19; UnknownWord = 20; Unknown = 21;
+    tokenizer: TurkishTokenizer = TurkishTokenizer.DEFAULT
 
-# Ignoring unwanted types
-tokenizer = TurkishTokenizer.builder().ignoreTypes(TurkishLexer.Punctuation, TurkishLexer.NewLine, 
-TurkishLexer.SpaceTab, TurkishLexer.Time, TurkishLexer.Date, TurkishLexer.URL, TurkishLexer.Mention, 
-TurkishLexer.HashTag, TurkishLexer.Email, TurkishLexer.WordWithSymbol, TurkishLexer.Number, 
-TurkishLexer.PercentNumeral, TurkishLexer.MetaTag, TurkishLexer.RomanNumeral, TurkishLexer.Unknown).build()
+    print('\nToken Iterator Example:\n')
 
-# A dummy data to work on
-dummy = "Prof. Dr. #VeliDavul IV @Istanbul 12.01.2017 12:00 açıklama yaptı. Kimse %6.5'lik enflasyon oranını beğenmemiş! :) veli@davul.com !!??=^+(/(&"
+    inp: str = 'İstanbul\'a, merhaba!'
+    print(f'Input = {inp}')
+    token_iterator = tokenizer.getTokenIterator(JString(inp))
+    for token in token_iterator:
+        print((
+            f'Token = {token}'
+            f'\n | Content = {token.content}'
+            f'\n | Normalized = {token.normalized}'
+            f'\n | Type = {token.type}'
+            f'\n | Start = {token.start}'
+            f'\n | End = {token.end}\n'
+        ))
 
-# Tokenize the dummy data
-tokens = tokenizer.tokenize(dummy)
+    print('Default Tokenization Example:\n')
 
-print('\n####### Ignoring Unwanted Types #######\n')
+    tokenizer: TurkishTokenizer = TurkishTokenizer.DEFAULT
+    inp: str = 'İstanbul\'a, merhaba!'
+    print(f'Input = {inp}')
+    for i, token in enumerate(tokenizer.tokenizeToStrings(
+        JString('İstanbul\'a, merhaba!')
+    )):
+        print(f' | Token String {i} = {token}')
 
-# Iterating through the tokens
-for token in tokens:
+    print('\nCustom Tokenization Example:\n')
 
-    # Printing the token information
-    print('Token = ' + str(token.getText()) 
-        + ' | Type (Raw) = ' + str(token.getType()) 
-        + ' | Type (Name) = ' + TurkishLexer.VOCABULARY.getDisplayName(token.getType()) 
-        + ' | Start Index = ' + str(token.getStartIndex()) 
-        + ' | Ending Index = ' + str(token.getStopIndex())
-    )
+    tokenizer: TurkishTokenizer = TurkishTokenizer.builder().ignoreTypes(
+        Token.Type.Punctuation,
+        Token.Type.NewLine,
+        Token.Type.SpaceTab
+    ).build()
+    inp: str = 'Saat, 12:00'
+    print(f'Input = {inp}')
+    for i, token in enumerate(tokenizer.tokenize(JString(inp))):
+        print(f' | Token {i} = {token}')
 
-# Shutting down the JVM
-jp.shutdownJVM()
+    shutdownJVM()

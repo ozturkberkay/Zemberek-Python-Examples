@@ -1,41 +1,85 @@
-# -*- coding: utf-8 -*-
+"""
+Zemberek: Simple Classification Example
+Documentation: https://bit.ly/2BNKPmP
+Java Code Example: https://bit.ly/2JsoO1i
+fastText Documentation: https://bit.ly/31YVBS8
+"""
 
-import jpype as jp
+from os.path import isfile, join
+from subprocess import call
 
-## Zemberek: Simple Classification Example
-# Documentation: https://github.com/ahmetaa/zemberek-nlp/tree/master/classification
-# Java Code Example: https://github.com/ahmetaa/zemberek-nlp/blob/master/examples/src/main/java/zemberek/examples/classification/SimpleClassification.java
-# fastText Documentation: https://fasttext.cc/docs/en/support.html
+from jpype import JClass, getDefaultJVMPath, java, shutdownJVM, startJVM
 
-# Relative path to Zemberek .jar
-ZEMBEREK_PATH = '../../bin/zemberek-full.jar'
+if __name__ == '__main__':
 
-# Start the JVM
-jp.startJVM(jp.getDefaultJVMPath(), '-ea', '-Djava.class.path=%s' % (ZEMBEREK_PATH))
+    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
 
-# Importing required Java classes
-FastTextClassifier = jp.JClass('zemberek.classification.FastTextClassifier')
-TurkishTokenizer = jp.JClass('zemberek.tokenization.TurkishTokenizer')
-Paths = jp.JClass('java.nio.file.Paths')
+    startJVM(
+        getDefaultJVMPath(),
+        '-ea',
+        f'-Djava.class.path={ZEMBEREK_PATH}',
+        convertStrings=False
+    )
 
-# Using the text classifier with quantized model
-# Make sure you generated a quantized model using:
-# examples/classification/train_classifier.py
-classifier = FastTextClassifier.load(Paths.get('../../data/classification/news-title-category-set.model.q'))
+    FastTextClassifier: JClass = JClass(
+        'zemberek.classification.FastTextClassifier'
+    )
+    TurkishTokenizer: JClass = JClass(
+        'zemberek.tokenization.TurkishTokenizer'
+    )
+    ScoredItem: JClass = JClass(
+        'zemberek.core.ScoredItem'
+    )
+    Paths: JClass = JClass(
+        'java.nio.file.Paths'
+    )
 
-# The dummy data to work on
-s = 'Beşiktaş berabere kaldı.'
+    path: str = join('..', '..', 'data', 'classification')
 
-# Processing the data before preediction
-processed = ' '.join(TurkishTokenizer.DEFAULT.tokenizeToStrings(s)).lower()
+    if not isfile(join(path, 'news-title-category-set.model')):
 
-# Predicting the 3 most likely labels
-results = classifier.predict(processed, 3)
+        print('Could not find a model. Training a new one...')
 
-# Printing the results...
-for i, result in enumerate(results):
-    print('Item %d: %s' % (i+1, result.item))
-    print('Score %d: %f\n' % (i+1, result.score))
+        if not isfile(join(path, 'news-title-category-set')):
+            raise FileNotFoundError(
+                'Could not train a model!'
+                ' Please include news-title-category-set!'
+            )
 
-# Shut down the JVM
-jp.shutdownJVM()
+        call([
+            'java',
+            '-jar', '../../bin/zemberek-full.jar',
+            'TrainClassifier',
+            '-i', '../../data/classification/news-title-category-set',
+            '-o', '../../data/classification/news-title-category-set.model',
+            '--learningRate', '0.1',
+            '--epochCount', '50',
+            '--applyQuantization',
+            '--cutOff', '15000'
+        ])
+
+    classifier: FastTextClassifier = FastTextClassifier.load(
+        Paths.get(
+            join(
+                '..', '..', 'data', 'classification',
+                'news-title-category-set.model'
+            )
+        )
+    )
+
+    sentence: str = 'Beşiktaş berabere kaldı.'
+
+    processed: str = ' '.join([
+        str(token)
+        for token in TurkishTokenizer.DEFAULT.tokenizeToStrings(sentence)
+    ]).lower()
+
+    results: java.util.ArrayList = classifier.predict(processed, 3)
+
+    for i, result in enumerate(results):
+        print(
+            f'\nItem {i + 1}: {result.item}',
+            f'\nScore {i + 1}: {result.score}'
+        )
+
+    shutdownJVM()

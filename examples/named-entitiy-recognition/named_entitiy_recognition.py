@@ -1,1 +1,1 @@
-# # On-hold until a NER dataset is acquired.
+# On-hold until a NER dataset is acquired.

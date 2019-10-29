@@ -1,44 +1,86 @@
-# -*- coding: utf-8 -*-
+"""
+Zemberek: Word Generation Example
+Documentation: https://bit.ly/2otE6LW
+Java Code Example: https://bit.ly/32TWKvb
+"""
 
-import jpype as jp
+from os.path import join
+from typing import List
 
-## Zemberek: Word Generation Example
-# Documentation: https://github.com/ahmetaa/zemberek-nlp/tree/master/morphology#word-generation
-# Java Code Example: https://github.com/ahmetaa/zemberek-nlp/blob/master/examples/src/main/java/zemberek/examples/morphology/GenerateWords.java
+from jpype import (JClass, JString, getDefaultJVMPath, java, shutdownJVM,
+                   startJVM)
 
-# Relative path to Zemberek .jar
-ZEMBEREK_PATH = '../../bin/zemberek-full.jar'
+if __name__ == '__main__':
 
-# Start the JVM
-jp.startJVM(jp.getDefaultJVMPath(), '-ea', '-Djava.class.path=%s' % (ZEMBEREK_PATH))
+    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
 
-# Import the required Java classes
-TurkishMorphology = jp.JClass('zemberek.morphology.TurkishMorphology')
+    startJVM(
+        getDefaultJVMPath(),
+        '-ea',
+        f'-Djava.class.path={ZEMBEREK_PATH}',
+        convertStrings=False
+    )
 
-# Root form of the word
-word = 'armut'
+    print('\nGenerating nouns.\n')
 
-# Possessive and case suffix combinations will 
-# be used for generating inflections of the word
-number = ['A3sg', 'A3pl']
-possessives = ['P1sg', 'P2sg', 'P3sg']
-cases = ['Dat', 'Loc', 'Abl']
+    number: List[JString] = [JString('A3sg'), JString('A3pl')]
+    possessives: List[JString] = [
+        JString('P1sg'), JString('P2sg'), JString('P3sg')
+    ]
+    cases: List[JString] = [JString('Dat'), JString('Loc'), JString('Abl')]
 
-# Disabling the cache and building using the word as the lexicon itself
-morphology = TurkishMorphology.builder().setLexicon(word).disableCache().build()
+    TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
 
-# Getting the dictionary item
-dictionary_item = morphology.getLexicon().getMatchingItems(word).get(0)
+    morphology: TurkishMorphology = (
+        TurkishMorphology.builder().setLexicon('armut').disableCache().build()
+    )
 
-# Iterating the Result class instance to to access
-# the generated word and the analysis
-for numberM in number:
-    for possessiveM in possessives:
-        for caseM in cases:
-            results = morphology.getWordGenerator().generate(dictionary_item, numberM, possessiveM, caseM)
-            for result in results:
-                print('Surface Form: %s' % result.surface)
-                print('Analysis: %s\n' % result.analysis)
+    item = morphology.getLexicon().getMatchingItems('armut').get(0)
 
-# Shutting down the JVM
-jp.shutdownJVM()
+    for number_m in number:
+        for possessive_m in possessives:
+            for case_m in cases:
+                for result in morphology.getWordGenerator().generate(
+                    item, number_m, possessive_m, case_m
+                ):
+                    print(str(result.surface))
+
+    print('\nGenerating verbs.\n')
+
+    positive_negatives: List[JString] = [JString(''), JString('Neg')]
+    times: List[JString] = [
+        'Imp', 'Aor', 'Past', 'Prog1', 'Prog2', 'Narr', 'Fut'
+    ]
+    people: List[JString] = [
+        'A1sg', 'A2sg', 'A3sg', 'A1pl', 'A2pl', 'A3pl'
+    ]
+
+    morphology: TurkishMorphology = (
+        TurkishMorphology.builder().setLexicon('okumak').disableCache().build()
+    )
+
+    stem: str = 'oku'
+
+    for pos_neg in positive_negatives:
+        for time in times:
+            for person in people:
+                seq: java.util.ArrayList = java.util.ArrayList()
+                if pos_neg:
+                    seq.add(JString(pos_neg))
+                if time:
+                    seq.add(JString(time))
+                if person:
+                    seq.add(JString(person))
+                results = list(morphology.getWordGenerator().generate(
+                    JString(stem),
+                    seq
+                ))
+                if not results:
+                    print((
+                        f'Cannot generate Stem = ["{stem}"]'
+                        f'\n | Morphemes = {[str(morph) for morph in seq]}'
+                    ))
+                    continue
+                print(' '.join(str(result.surface) for result in results))
+
+    shutdownJVM()

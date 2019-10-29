@@ -1,58 +1,52 @@
-# -*- coding: utf-8 -*-
-
-import jpype as jp
-
+"""
 ## Zemberek: Noisy Text Normalization Example
-# Documentation: https://github.com/ahmetaa/zemberek-nlp/tree/master/normalization#noisy-text-normalization
-# Java Code Example: https://github.com/ahmetaa/zemberek-nlp/blob/master/examples/src/main/java/zemberek/examples/normalization/NormalizeNoisyText.java
+# Documentation: https://bit.ly/2WkUVVF
+# Java Code Example: https://bit.ly/31Qi9Ew
+"""
 
-# Method:
-    # From clean and noisy corpora, vocabularies are created using morphological analysis.
-    # With some heuristics and language models, words that should be split to two are found.
-    # From corpora, correct, incorrect and possibly-incorrect sets are created.
-    # For pre-processing, deasciifier, split and combine heuristics are applied.
-    # Using those sets and large corpora, a noisy to clean word lookup is generated using a modified version of Hassan and Menezes 2013 work [1].
-    # For a sentence, for every noisy word, candidates are collected from lookup tables, informal and ascii-matching morphological analysis and spell checker.
-    # Most likely correct sequence is found running Viterbi algorithm on candidate words with language model scoring.
+from os.path import join
 
-# Relative path to Zemberek .jar
-ZEMBEREK_PATH = '../../bin/zemberek-full.jar'
+from jpype import JClass, JString, getDefaultJVMPath, shutdownJVM, startJVM
 
-# Start the JVM
-jp.startJVM(jp.getDefaultJVMPath(), '-ea', '-Djava.class.path=%s' % (ZEMBEREK_PATH))
+if __name__ == '__main__':
 
-# Import the required Java classes
-TurkishMorphology = jp.JClass('zemberek.morphology.TurkishMorphology')
-TurkishSentenceNormalizer = jp.JClass('zemberek.normalization.TurkishSentenceNormalizer')
-Paths = jp.JClass('java.nio.file.Paths')
+    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
 
-# List of dummy sentences to work on
-examples = [
-	'Yrn okua gidicem',
-	'Tmm, yarin havuza giricem ve aksama kadar yaticam :)',
-	'ah aynen ya annemde fark ettı siz evinizden cıkmayın diyo',
-	'gercek mı bu? Yuh! Artık unutulması bile beklenmiyo',
-	'Hayır hayat telaşm olmasa alacam buraları gökdelen dikicem.',
-	'yok hocam kesınlıkle oyle birşey yok',
-	'herseyi soyle hayatında olmaması gerek bence boyle ınsanların falan baskı yapıyosa'
-]
+    startJVM(
+        getDefaultJVMPath(),
+        '-ea',
+        f'-Djava.class.path={ZEMBEREK_PATH}',
+        convertStrings=False
+    )
 
-# Get the path to the (baseline) lookup files
-lookupRoot = Paths.get('../../data/normalization')
+    TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
+    TurkishSentenceNormalizer: JClass = JClass(
+        'zemberek.normalization.TurkishSentenceNormalizer'
+    )
+    Paths: JClass = JClass('java.nio.file.Paths')
 
-# Get the path to the compressed bi-gram language model
-lmPath = Paths.get('../../data/lm/lm.2gram.slm')
+    normalizer = TurkishSentenceNormalizer(
+        TurkishMorphology.createWithDefaults(),
+        Paths.get(
+            join('..', '..', 'data', 'normalization')
+        ),
+        Paths.get(
+            join('..', '..', 'data', 'lm', 'lm.2gram.slm')
+        )
+    )
 
-# Instantiate the morphology class with the default RootLexicon
-morphology = TurkishMorphology.createWithDefaults()
+    for i, example in enumerate([
+        'Yrn okua gidicem',
+        'Tmm, yarin havuza giricem ve aksama kadar yaticam :)',
+        'ah aynen ya annemde fark ettı siz evinizden cıkmayın diyo',
+        'gercek mı bu? Yuh! Artık unutulması bile beklenmiyo',
+        'Hayır hayat telaşm olmasa alacam buraları gökdelen dikicem.',
+        'yok hocam kesınlıkle oyle birşey yok',
+        'herseyi soyle hayatında olmaması gerek bence boyle ınsanların'
+    ]):
+        print((
+            f'\nNoisy {i}: {example}'
+            f'\nNormalized {i}: {normalizer.normalize(JString(example))}'
+        ))
 
-# Initialize the TurkishSentenceNormalizer class
-normalizer = TurkishSentenceNormalizer(morphology, lookupRoot, lmPath)
-
-# Normalize the sentences and print the results
-for i, example in enumerate(examples):
-	print('Noisy Sentence %d: %s\nNormalized Sentence %d: %s\n' 
-	% (i, example, i, normalizer.normalize(example)))
-
-# Shut down the JVM
-jp.shutdownJVM()
+    shutdownJVM()

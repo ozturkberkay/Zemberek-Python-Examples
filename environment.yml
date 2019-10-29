@@ -1,0 +1,22 @@
+name: zemberek
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - certifi=2019.9.11=py36_0
+  - intel-openmp=2019.4=245
+  - jpype1=0.7=py36h79cbd7a_0
+  - libblas=3.8.0=14_mkl
+  - libcblas=3.8.0=14_mkl
+  - liblapack=3.8.0=14_mkl
+  - mkl=2019.4=245
+  - numpy=1.17.3=py36hc71023c_0
+  - pip=19.3.1=py36_0
+  - python=3.6.7=he025d50_1005
+  - setuptools=41.4.0=py36_0
+  - vc=14.1=h0510ff6_4
+  - vs2015_runtime=14.16.27012=hf0eaf9b_0
+  - wheel=0.33.6=py36_0
+  - wincertstore=0.2=py36_1002
+prefix: A:\Development_Environment\Python\Miniconda3\envs\zemberek
+

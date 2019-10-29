@@ -1,41 +1,48 @@
-# -*- coding: utf-8 -*-
+"""
+Zemberek: Finding POS Tag Example
+Documentation: https://bit.ly/32WCfyi
+Java Code Example: https://bit.ly/2Nn7hse
+"""
 
-import jpype as jp
+from os.path import join
+from typing import List
 
-## Zemberek: Finding POS Tag Example
-# Documentation: https://github.com/ahmetaa/zemberek-nlp/tree/master/morphology
-# Java Code Example: https://github.com/ahmetaa/zemberek-nlp/blob/master/examples/src/main/java/zemberek/examples/morphology/FindPOS.java
+from jpype import JClass, getDefaultJVMPath, java, shutdownJVM, startJVM
 
-# Relative path to Zemberek .jar
-ZEMBEREK_PATH = '../../bin/zemberek-full.jar'
+if __name__ == '__main__':
 
-# Start the JVM
-jp.startJVM(jp.getDefaultJVMPath(), '-ea', '-Djava.class.path=%s' % (ZEMBEREK_PATH))
+    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
 
-# Import the required Java classes
-TurkishMorphology = jp.JClass('zemberek.morphology.TurkishMorphology')
+    startJVM(
+        getDefaultJVMPath(),
+        '-ea',
+        f'-Djava.class.path={ZEMBEREK_PATH}',
+        convertStrings=False
+    )
 
-# Instantiating the morphology class with the default RootLexicon
-morphology = TurkishMorphology.createWithDefaults()
+    TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
 
-# A dummy sentence to work on
-sentence = 'Keşke yarın hava güzel olsa'
+    morphology: TurkishMorphology = TurkishMorphology.createWithDefaults()
 
-# Analyzing and disambiguating the sentence
-analysis = morphology.analyzeAndDisambiguate(sentence).bestAnalysis()
+    sentence: str = 'Keşke yarın hava güzel olsa'
 
-# A list to store primary POS tags
-pos = []
+    analysis: java.util.ArrayList = (
+        morphology.analyzeAndDisambiguate(sentence).bestAnalysis()
+    )
 
-# Printing the results...
-for i, a in enumerate(analysis):
-    print('Analysis %d: %s' % (i+1, a))
-    print('Primary POS %d: %s' % (i+1, a.getPos()))
-    print('Primary POS (Short Form) %d: %s\n' % (i+1, a.getPos().shortForm))
-    pos.append(a.getLemmas()[0] + '-' + a.getPos().shortForm)
+    pos: List[str] = []
 
-# Printing each word with the corresponding primary POS tag...
-print('Sentence: ' + ' '.join(pos))
+    for i, analysis in enumerate(analysis, start=1):
+        print(
+            f'\nAnalysis {i}: {analysis}',
+            f'\nPrimary POS {i}: {analysis.getPos()}'
+            f'\nPrimary POS (Short Form) {i}: {analysis.getPos().shortForm}'
+        )
+        pos.append(
+            f'{str(analysis.getLemmas()[0])}'
+            f'-{analysis.getPos().shortForm}'
+        )
 
-# Shutting down the JVM
-jp.shutdownJVM()
+    print(f'\nFull sentence with POS tags: {" ".join(pos)}')
+
+    shutdownJVM()

@@ -1,20 +1,42 @@
 # Zemberek Python Examples
+
 > Zemberek Turkish NLP examples written in Python using the JPype package.
 
-:exclamation: **Requires Zemberek 0.16! 0.17 update with new features and fixes are coming soon!**
+Zemberek is a Java-based natural language processing (NLP) tool created for the Turkish language. This repository contains a bunch of Python implementations of the [official Zemberek examples](https://github.com/ahmetaa/zemberek-nlp/tree/master/examples/src/main/java/zemberek/examples) for learning purposes.
 
- Zemberek is a Java-based, natural language processing (NLP) tool, created for the Turkish language. This repository contains a bunch of Python implementations of the [official Zemberek examples](https://github.com/ahmetaa/zemberek-nlp/tree/master/examples/src/main/java/zemberek/examples) for learning purposes. 
- 
-## Installation
+## Requirements
 
- 1. Install the JPype package:
+1.  Python 3.6+
+2.  JPype1 0.7.0
+
+## Getting Started
+
+1.  Install the JPype package.
+
+    For `pip` users:
 
     ```console
     pip install JPype1
     ```
 
- 2. Download all the data and the **version 0.16** distribution of Zemberek from [the official Zemberek Drive folder](https://drive.google.com/drive/folders/0B9TrB39LQKZWSjNKdVcwWUxxUm8?usp=sharing) and put the files in the corresponding folders:
-    
+    For `conda` users:
+
+    ```console
+    conda install -c conda-forge jpype
+    ```
+
+    You can also clone my environment:
+
+    ```console
+    # Pip
+    pip install -r requirements.txt
+
+    # Conda
+    conda env create -f environment.yml
+    ```
+
+2.  Download all the data and version `0.17.1` of Zemberek distribution from [the official Zemberek Drive folder](https://drive.google.com/drive/folders/0B9TrB39LQKZWSjNKdVcwWUxxUm8?usp=sharing) and put the files in the corresponding folders:
+
         .
         +-- bin
         |   +-- zemberek-full.jar
@@ -38,25 +60,31 @@
 
 ## Usage
 
-| Folder | Description |
-| ----------- | ----------- |
-| classification | fastText examples |
-| core | core functionalities |
-| morphology | morphology analysis, stemming, lemmatization, ambiguity resolution, informal words analysis, adding dictionaries, word generation, finding POS tags... |
-| named-entitiy-recognition | on hold |
-| normalization | document correction, noisy text normalization, spell checking |
-| tokenization | sentence boundary detection, turkish tokenization |
+1. `cd` to the directory of your desired example.
+2. Run the example via `python`.
 
-`cd` to the folder you want and run the script you want using `python the_example_you_want.py`. Everything is documented and ready to go.
+## Table of Contents
+
+| Folder                    | Description                                                                                                                                                                       |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| classification            | fastText examples                                                                                                                                                                 |
+| core                      | histogram                                                                                                                                                                         |
+| morphology                | stemming, lemmatization, diacritics analysis, POS tag analysis, morphological analysis, word generation, sentence disambiguation, informal word analysis, adding dictionary items |
+| named-entitiy-recognition | on hold                                                                                                                                                                           |
+| normalization             | document correction, noisy text normalization, spell checking                                                                                                                     |
+| tokenization              | sentence boundary detection, turkish tokenization                                                                                                                                 |
+
+## Known Bugs
+
+-   During the model training, fastText will print errors. It still works, just ignore them. If you run the code the second time, model training will be skipped and the console output will be clean of errors.
 
 ## Changelog
 
-* 0.0.1
-    * Classification, morphology, normalization and tokenization examples are added. NER examples are on hold until I acquire a Turkish NER dataset.
-
-## Meta
-
-Berkay Öztürk – info@berkayozturk.net
-
-Distributed under the GNU General Public License v3.0 license. See ``LICENSE`` for more information.
-[https://github.com/ozturkberkay/Zemberek-Python-Examples](https://github.com/ozturkberkay/Zemberek-Python-Examples)
+-   30.10.2019
+    -   Zemberek 0.17.1 update.
+    -   JPype 0.7.0 update.
+    -   Code style changes.
+    -   Bug-fixes.
+    -   License is now the same with Zemberek (Apache v2.0).
+-   01.12.2018
+    -   Classification, morphology, normalization and tokenization examples.
