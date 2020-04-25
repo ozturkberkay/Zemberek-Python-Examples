@@ -58,6 +58,50 @@ Zemberek is a Java-based natural language processing (NLP) tool created for the 
         LICENSE
         README.md
 
+## Usage of Object Oriented version (turkishnlptool library)
+    
+1.  Setup the library with setup.py file.
+
+    ```console
+    python setup.py install
+    ```
+
+2.  Import library and create Zemberek object.
+
+    ```python
+    import turkishnlptool as tnlpt
+    zmbrk = tnlpt.Zemberek()
+    ```
+
+3.  Use the object and library. Some examples.
+
+    ```python
+    import turkishnlptool as tnlpt
+    zmbrk = tnlpt.Zemberek()
+    zmbrk.addVerb(['tweetlemek','tweetle','tivitle'])
+    zmbrk.analyze('tweetleyeyazdım')
+    stems, lemmas = zmbrk.stemLemma('kutucuğumuz')
+    print('stems: {stems}, lemmas: {lemmas}')
+    zmbrk.analyze('kutucuğumuz')
+    zmbrk.informalWordAnalysis('okuycam diyo')
+    stems, lemmas = zmbrk.sentenceDisambugation('Bol baharatlı bir yemek yaptıralım.')
+    print('stems: {stems}, lemmas: {lemmas}')
+    sents = zmbrk.sentenceBoundary('Prof. Dr. Veli Davul açıklama yaptı. Kimse %6.5 lik enflasyon oranını beğenmemiş! Oysa maçta ikinci olmuştuk... Değil mi?')
+    print(sents)
+    res = zmbrk.sentenceTokenization('İstanbul\'a, merhaba! Ankara\'dan sonra yeni bir şehre gelmek bana iyi geldi :)')
+    print(res)
+    stems,lemmas= zmbrk.sentenceDisambugation('İstanbul\'a, merhaba! Ankara\'dan sonra yeni bir şehre gelmek bana iyi geldi :)')
+    print('stems: {stems}, lemmas: {lemmas}')
+    zmbrk.sentenceTokenization('Nbr knk ? yrn n zmn gelcen?')
+    zmbrk.correctDocument('Nbr knk ? yrn n zmn gelcen?')
+    res = zmbrk.correctDocument('böle olmasını istemiyom ya')
+    print(res)
+    res = zmbrk.normalizeDocument('Nbr knk ? yrn n zmn gelcen?')
+    print(res)
+    poses = zmbrk.findPOS('Keşke yarın hava güzel olsa')
+    print(poses)
+    ```
+
 ## Usage
 
 1. `cd` to the directory of your desired example.
