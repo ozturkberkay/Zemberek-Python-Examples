@@ -34,7 +34,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=(
             'Run a Zemberek example. Example usage: python -m main'
-            ' examples.morphology.change_stem evime simidime'
+            ' morphology.word_analysis kelime'
         )
     )
     parser.add_argument(

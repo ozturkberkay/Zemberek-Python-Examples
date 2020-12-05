@@ -21,19 +21,29 @@ Zemberek is a Java-based natural language processing (NLP) tool created for the 
 
 ## Getting Started
 
-1.  Install the required packages. Using `virtualenv` is highly encouraged!
+1. Clone this library and `cd` into it.
+    ```shell
+    $ git clone https://github.com/ozturkberkay/Zemberek-Python-Examples.git
+    $ cd Zemberek-Python-Examples
+    ```
+
+2.  Install the required packages. Using `virtualenv` is highly encouraged!
 
     ```shell
+    $ python -m pip install --upgrade pip virtualenv
+    $ python -m virtualenv .env
+    $ # Windows: .env\Scripts\activate
+    $ source .env/bin/activate
     $ python -m pip install -r requirements.txt
     ```
 
-2. Download the required Zemberek files:
+3. Download the required Zemberek files:
 
     ```shell
     $ python -m downloader 
     ```
 
-    Optionally, you can download all the data and version `0.17.1` of Zemberek distribution from [the official Zemberek Drive folder](https://drive.google.com/drive/folders/0B9TrB39LQKZWSjNKdVcwWUxxUm8?usp=sharing) and put the files in the corresponding folders:
+    Optionally, you can manually download all the data and version `0.17.1` of Zemberek distribution from [the official Zemberek Drive folder](https://drive.google.com/drive/folders/0B9TrB39LQKZWSjNKdVcwWUxxUm8?usp=sharing) and put the files in the corresponding folders:
 
         .
         +-- bin

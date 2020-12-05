@@ -1,14 +1,16 @@
 from typing import Dict
-import gdown
 from pathlib import Path
 
+import gdown
 
 ZEMBEREK_FILES: Dict[str, Dict[str, str]] = {
     'bin': {'zemberek-full.jar': '1RRuFK43JqcHcthB3fV2IEpPftWoeoHAu'},
     'data/classification': {
         'news-title-category-set': '13d6TjKSk8Uy0FNHrbqJQv1hHalKUg1l5',
         'news-title-category-set.lemmas': '1VP-DcPDY423cU48CP675yT6RS_hygtpX',
-        'news-title-category-set.tokenized': '1xt81joeOA7nOTYNUKdxKBOeDtLGMCwNO',
+        'news-title-category-set.tokenized': (
+            '1xt81joeOA7nOTYNUKdxKBOeDtLGMCwNO'
+        ),
     },
     'data/lm': {'lm.2gram.slm': '1JZG0I8jUS511lFVg0M-QAA4QRqydlCiX'},
     'data/normalization': {
