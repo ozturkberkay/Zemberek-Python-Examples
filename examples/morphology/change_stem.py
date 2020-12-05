@@ -1,42 +1,41 @@
 """
 Zemberek: Change Stem Example
 Documentation: https://bit.ly/2WmPDsW
-Java Code Example: https://bit.ly/32W6tkH
+Java Code Example: https://bit.ly/39Jnp49
 """
+from typing import List
 
-from os.path import join
+from jpype import (
+    JClass,
+    JString,
+    java,
+)
 
-from jpype import (JClass, JString, getDefaultJVMPath, java, shutdownJVM,
-                   startJVM)
+__all__: List[str] = ['run']
 
-if __name__ == '__main__':
+TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
+DictionaryItem: JClass = JClass('zemberek.morphology.lexicon.DictionaryItem')
+WordAnalysis: JClass = JClass('zemberek.morphology.analysis.WordAnalysis')
 
-    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
 
-    startJVM(
-        getDefaultJVMPath(),
-        '-ea',
-        f'-Djava.class.path={ZEMBEREK_PATH}',
-        convertStrings=False
-    )
+def run(
+    source_word: str,
+    target_word: str,
+) -> None:
+    """
+    Stem change example.
 
-    TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
-    DictionaryItem: JClass = JClass(
-        'zemberek.morphology.lexicon.DictionaryItem'
-    )
-    WordAnalysis: JClass = JClass('zemberek.morphology.analysis.WordAnalysis')
-
+    Args:
+        source_word (str): Word to get stem from.
+        target_word (str): Word to apply stem change.
+    """
     morphology: TurkishMorphology = TurkishMorphology.createWithDefaults()
 
     new_stem: DictionaryItem = (
-        morphology.getLexicon().getMatchingItems('kalem').get(0)
+        morphology.getLexicon().getMatchingItems(target_word).get(0)
     )
 
-    word: str = 'simidime'
-
-    print(f'\nWord: {word}')
-
-    results: WordAnalysis = morphology.analyze(JString(word))
+    results: WordAnalysis = morphology.analyze(JString(source_word))
 
     for result in results:
         generated: java.util.ArrayList = (
@@ -44,12 +43,10 @@ if __name__ == '__main__':
                 new_stem, result.getMorphemes()
             )
         )
-        for word in generated:
+        for gen_word in generated:
             print(
                 f'\nInput Analysis: {str(result.formatLong())}'
-                f'\nAfter Stem Change, Word: {str(word.surface)}'
+                f'\nAfter Stem Change, Word: {str(gen_word.surface)}'
                 '\nAfter Stem Change, Analysis:'
-                f'{str(word.analysis.formatLong())}'
+                f'{str(gen_word.analysis.formatLong())}'
             )
-
-    shutdownJVM()

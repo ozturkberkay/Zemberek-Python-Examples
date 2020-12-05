@@ -3,36 +3,32 @@ Zemberek: Diacritic Analysis Example
 Documentation: https://bit.ly/2PsyRHk
 Java Code Example: https://bit.ly/2Jx7zfk
 """
+from typing import List
 
-from os.path import join
+from jpype import JClass
 
-from jpype import JClass, getDefaultJVMPath, shutdownJVM, startJVM
+__all__: List[str] = ['run']
 
-if __name__ == '__main__':
+TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
+RootLexicon: JClass = JClass('zemberek.morphology.lexicon.RootLexicon')
 
-    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
 
-    startJVM(
-        getDefaultJVMPath(),
-        '-ea',
-        f'-Djava.class.path={ZEMBEREK_PATH}',
-        convertStrings=False
-    )
+def run(word: str) -> None:
+    """
+    Diacritic analysis example.
 
-    TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
-    RootLexicon: JClass = JClass('zemberek.morphology.lexicon.RootLexicon')
+    Args:
+        word (str): Word to apply diacritic analysis.
+    """
 
     morphology: TurkishMorphology = (
-        TurkishMorphology.builder().ignoreDiacriticsInAnalysis().setLexicon(
-            RootLexicon.getDefault()
-        ).build()
+        TurkishMorphology.builder()
+        .ignoreDiacriticsInAnalysis()
+        .setLexicon(RootLexicon.getDefault())
+        .build()
     )
 
-    word: str = 'kisi'
-
-    print(f'\nWord: {word}\n\nAnalysis:')
+    print('\nAnalysis:')
 
     for analysis in morphology.analyze(word):
         print(analysis)
-
-    shutdownJVM()

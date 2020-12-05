@@ -3,33 +3,28 @@ Zemberek: Word Analysis Example
 Documentation: https://bit.ly/2MTmfr1
 Java Code Example: https://bit.ly/2MV2Hmj
 """
+from typing import List
 
-from os.path import join
+from jpype import JClass, JString
 
-from jpype import JClass, JString, getDefaultJVMPath, shutdownJVM, startJVM
+__all__: List[str] = ['run']
 
-if __name__ == '__main__':
+TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
+AnalysisFormatters: JClass = JClass(
+    'zemberek.morphology.analysis.AnalysisFormatters'
+)
+WordAnalysis: JClass = JClass('zemberek.morphology.analysis.WordAnalysis')
 
-    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
 
-    startJVM(
-        getDefaultJVMPath(),
-        '-ea',
-        f'-Djava.class.path={ZEMBEREK_PATH}',
-        convertStrings=False
-    )
+def run(word: str) -> None:
+    """
+    Word analysis example.
 
-    TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
-    AnalysisFormatters: JClass = JClass(
-        'zemberek.morphology.analysis.AnalysisFormatters'
-    )
-    WordAnalysis: JClass = JClass('zemberek.morphology.analysis.WordAnalysis')
+    Args:
+        word (str):
+    """
 
     morphology: TurkishMorphology = TurkishMorphology.createWithDefaults()
-
-    word: str = 'kalemi'
-
-    print(f'\nWord: {word}')
 
     results: WordAnalysis = morphology.analyze(JString(word))
 
@@ -40,5 +35,3 @@ if __name__ == '__main__':
             '\nOflazer Style:'
             f'{str(AnalysisFormatters.OFLAZER_STYLE.format(result))}'
         )
-
-    shutdownJVM()

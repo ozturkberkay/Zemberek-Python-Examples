@@ -1,2 +1,2 @@
 # Zemberek JAR Distribution
-> Download the latest version of Zemberek from [the official Zemberek Drive folder](https://drive.google.com/drive/folders/0B9TrB39LQKZWX1RSang3M1VkYjQ?usp=sharing) and put the `zemberek-full.jar` file in this folder.
+> Download the latest version of Zemberek from [the official Zemberek Drive folder](https://drive.google.com/drive/folders/0B9TrB39LQKZWX1RSang3M1VkYjQ?usp=sharing) and put the `zemberek-full.jar` file in this folder. Or use `zemberek_downloader.py` to automatically download the files.

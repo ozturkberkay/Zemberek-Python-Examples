@@ -3,37 +3,38 @@ Zemberek: Informal Turkish Words Analysis
 Documentation: https://bit.ly/2WpvvXg
 Java Code Example: https://bit.ly/2MUvOG9
 """
+from typing import List
 
-from os.path import join
+from jpype import JClass, java
 
-from jpype import JClass, getDefaultJVMPath, java, shutdownJVM, startJVM
+__all__: List[str] = ['run']
 
-if __name__ == '__main__':
+TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
+RootLexicon: JClass = JClass('zemberek.morphology.lexicon.RootLexicon')
+InformalAnalysisConverter: JClass = JClass(
+    'zemberek.morphology.analysis.InformalAnalysisConverter'
+)
 
-    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
 
-    startJVM(
-        getDefaultJVMPath(),
-        '-ea',
-        f'-Djava.class.path={ZEMBEREK_PATH}',
-        convertStrings=False
-    )
+def run(sentence: str) -> None:
+    """
+    Informal words analysis example.
 
-    TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
-    RootLexicon: JClass = JClass('zemberek.morphology.lexicon.RootLexicon')
-    InformalAnalysisConverter: JClass = JClass(
-        'zemberek.morphology.analysis.InformalAnalysisConverter'
-    )
+    Args:
+        sentence (str): Sentence to search for informal words.
+    """
 
     morphology: TurkishMorphology = (
-        TurkishMorphology.builder().setLexicon(
-            RootLexicon.getDefault()
-        ).ignoreDiacriticsInAnalysis().useInformalAnalysis().build()
+        TurkishMorphology.builder()
+        .setLexicon(RootLexicon.getDefault())
+        .ignoreDiacriticsInAnalysis()
+        .useInformalAnalysis()
+        .build()
     )
 
-    analyses: java.util.ArrayList = (
-        morphology.analyzeAndDisambiguate('okuycam diyo').bestAnalysis()
-    )
+    analyses: java.util.ArrayList = morphology.analyzeAndDisambiguate(
+        sentence
+    ).bestAnalysis()
 
     print('\nAnalysis:\n')
 
@@ -42,11 +43,9 @@ if __name__ == '__main__':
 
     print('\nConverting formal surface form:\n')
 
-    converter: InformalAnalysisConverter = (
-        InformalAnalysisConverter(morphology.getWordGenerator())
+    converter: InformalAnalysisConverter = InformalAnalysisConverter(
+        morphology.getWordGenerator()
     )
 
     for analysis in analyses:
         print(str(converter.convert(analysis.surfaceForm(), analysis)))
-
-    shutdownJVM()

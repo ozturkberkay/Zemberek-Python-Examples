@@ -4,34 +4,24 @@ Documentation: https://bit.ly/2JopMvt
 Java Code Example: https://bit.ly/2PrG7Dw
 """
 
-from os.path import join
+from jpype import JClass
 
-from jpype import JClass, getDefaultJVMPath, shutdownJVM, startJVM
+TurkishSentenceExtractor: JClass = JClass(
+    'zemberek.tokenization.TurkishSentenceExtractor'
+)
 
-if __name__ == '__main__':
 
-    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
+def run(paragraph: str) -> None:
+    """
+    Sentence boundary detection example.
 
-    startJVM(
-        getDefaultJVMPath(),
-        '-ea',
-        f'-Djava.class.path={ZEMBEREK_PATH}',
-        convertStrings=False
-    )
-
-    TurkishSentenceExtractor: JClass = JClass(
-        'zemberek.tokenization.TurkishSentenceExtractor'
-    )
+    Args:
+        paragraph (str): Paragraph to detect sentence boundaries.
+    """
 
     extractor: TurkishSentenceExtractor = TurkishSentenceExtractor.DEFAULT
 
-    sentences = extractor.fromParagraph((
-        'Prof. Dr. Veli Davul açıklama yaptı.'
-        'Kimse %6.5 lik enflasyon oranını beğenmemiş!'
-        'Oysa maçta ikinci olmuştuk... Değil mi?'
-    ))
+    sentences = extractor.fromParagraph(paragraph)
 
     for i, word in enumerate(sentences):
         print(f'Sentence {i+1}: {word}')
-
-    shutdownJVM()

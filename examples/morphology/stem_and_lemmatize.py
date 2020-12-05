@@ -3,30 +3,26 @@ Zemberek: Stemming and Lemmatization Example
 Documentation: https://bit.ly/2WvtQzv
 Java Code Example: https://bit.ly/2Wm71hj
 """
+from typing import List
+from jpype import JClass, JString
 
-from os.path import join
+__all__: List[str] = ['run']
 
-from jpype import JClass, JString, getDefaultJVMPath, shutdownJVM, startJVM
+TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
+WordAnalysis: JClass = JClass('zemberek.morphology.analysis.WordAnalysis')
 
-if __name__ == '__main__':
 
-    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
+def run(word: str) -> None:
+    """
+    Stemming and lemmatization example.
 
-    startJVM(
-        getDefaultJVMPath(),
-        '-ea',
-        f'-Djava.class.path={ZEMBEREK_PATH}',
-        convertStrings=False
-    )
-
-    TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
-    WordAnalysis: JClass = JClass('zemberek.morphology.analysis.WordAnalysis')
+    Args:
+        word (str): Word to apply stemming and lemmatization.
+    """
 
     morphology: TurkishMorphology = TurkishMorphology.createWithDefaults()
 
-    word: str = 'kutucuğumuz'
-
-    print(f'\nWord: {word}\n\nResults:')
+    print('\nResults:')
 
     results: WordAnalysis = morphology.analyze(JString(word))
 
@@ -38,5 +34,3 @@ if __name__ == '__main__':
             f'\n\tLemmas ='
             f' {", ".join([str(result) for result in result.getLemmas()])}'
         )
-
-    shutdownJVM()

@@ -1,2 +1,2 @@
 # Zemberek Language Model Data
-> Download the language model data files from [the official Zemberek Drive folder](https://drive.google.com/drive/folders/1jb4ei8rbBRfBmK1WrhdjqyEkVZmieZpI?usp=sharing) and put the contents in this folder.
+> Download the language model data files from [the official Zemberek Drive folder](https://drive.google.com/drive/folders/1jb4ei8rbBRfBmK1WrhdjqyEkVZmieZpI?usp=sharing) and put the contents in this folder. Or use `zemberek_downloader.py` to automatically download the files.

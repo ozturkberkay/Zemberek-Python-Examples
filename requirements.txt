@@ -1,2 +1,2 @@
-JPype1==0.7.0
-virtualenv==16.7.4
+gitdb==4.0.5
+JPype1==1.2.0

@@ -3,32 +3,28 @@ Zemberek: Finding POS Tag Example
 Documentation: https://bit.ly/32WCfyi
 Java Code Example: https://bit.ly/2Nn7hse
 """
-
-from os.path import join
 from typing import List
 
-from jpype import JClass, getDefaultJVMPath, java, shutdownJVM, startJVM
+from jpype import JClass, java
 
-if __name__ == '__main__':
+__all__: List[str] = ['run']
 
-    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
+TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
 
-    startJVM(
-        getDefaultJVMPath(),
-        '-ea',
-        f'-Djava.class.path={ZEMBEREK_PATH}',
-        convertStrings=False
-    )
 
-    TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
+def run(sentence: str):
+    """
+    POS tag detection example.
+
+    Args:
+        sentence (str): Sentence to find POS tags on.
+    """
 
     morphology: TurkishMorphology = TurkishMorphology.createWithDefaults()
 
-    sentence: str = 'Keşke yarın hava güzel olsa'
-
-    analysis: java.util.ArrayList = (
-        morphology.analyzeAndDisambiguate(sentence).bestAnalysis()
-    )
+    analysis: java.util.ArrayList = morphology.analyzeAndDisambiguate(
+        sentence
+    ).bestAnalysis()
 
     pos: List[str] = []
 
@@ -36,13 +32,10 @@ if __name__ == '__main__':
         print(
             f'\nAnalysis {i}: {analysis}',
             f'\nPrimary POS {i}: {analysis.getPos()}'
-            f'\nPrimary POS (Short Form) {i}: {analysis.getPos().shortForm}'
+            f'\nPrimary POS (Short Form) {i}: {analysis.getPos().shortForm}',
         )
         pos.append(
-            f'{str(analysis.getLemmas()[0])}'
-            f'-{analysis.getPos().shortForm}'
+            f'{str(analysis.getLemmas()[0])}-{analysis.getPos().shortForm}'
         )
 
     print(f'\nFull sentence with POS tags: {" ".join(pos)}')
-
-    shutdownJVM()

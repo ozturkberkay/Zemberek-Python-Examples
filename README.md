@@ -2,40 +2,38 @@
 
 > Zemberek Turkish NLP examples written in Python using the JPype package.
 
-Zemberek is a Java-based natural language processing (NLP) tool created for the Turkish language. This repository contains a bunch of Python implementations of the [official Zemberek examples](https://github.com/ahmetaa/zemberek-nlp/tree/master/examples/src/main/java/zemberek/examples) for learning purposes.
+Zemberek is a Java-based natural language processing (NLP) tool created for the Turkish language. This repository contains the Python implementations of the [official Zemberek examples](https://github.com/ahmetaa/zemberek-nlp/tree/master/examples/src/main/java/zemberek/examples) for learning purposes.
 
+## Table of Contents
+
+| Folder                    | Description                                                                                                                                                                       |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| classification            | fastText examples                                                                                                                                                                 |
+| core                      | histogram                                                                                                                                                                         |
+| morphology                | stemming, lemmatization, diacritics analysis, POS tag analysis, morphological analysis, word generation, sentence disambiguation, informal word analysis, adding dictionary items |
+| named-entitiy-recognition | on hold                                                                                                                                                                           |
+| normalization             | document correction, noisy text normalization, spell checking                                                                                                                     |
+| tokenization              | sentence boundary detection, turkish tokenization                                                                                                                                 |
+  
 ## Requirements
 
 1.  Python 3.6+
-2.  JPype1 0.7.0
 
 ## Getting Started
 
-1.  Install the JPype package.
+1.  Install the required packages. Using `virtualenv` is highly encouraged!
 
-    For `pip` users:
-
-    ```console
-    pip install JPype1
+    ```shell
+    $ python -m pip install -r requirements.txt
     ```
 
-    For `conda` users:
+2. Download the required Zemberek files:
 
-    ```console
-    conda install -c conda-forge jpype
+    ```shell
+    $ python -m downloader 
     ```
 
-    You can also clone my environment:
-
-    ```console
-    # Pip
-    pip install -r requirements.txt
-
-    # Conda
-    conda env create -f environment.yml
-    ```
-
-2.  Download all the data and version `0.17.1` of Zemberek distribution from [the official Zemberek Drive folder](https://drive.google.com/drive/folders/0B9TrB39LQKZWSjNKdVcwWUxxUm8?usp=sharing) and put the files in the corresponding folders:
+    Optionally, you can download all the data and version `0.17.1` of Zemberek distribution from [the official Zemberek Drive folder](https://drive.google.com/drive/folders/0B9TrB39LQKZWSjNKdVcwWUxxUm8?usp=sharing) and put the files in the corresponding folders:
 
         .
         +-- bin
@@ -53,38 +51,50 @@ Zemberek is a Java-based natural language processing (NLP) tool created for the 
         |       +-- ascii-map
         |       +-- lookup-from-graph
         |       +-- split
-        +-- examples
-        .gitignore
-        LICENSE
-        README.md
 
 ## Usage
 
-1. `cd` to the directory of your desired example.
-2. Run the example via `python`.
+1. Run `python -m main category.example args`.
 
-## Table of Contents
+    ```shell
+    $ python -m main classification.simple_classification "Fenerbahçe bu maçı galibiyet ile sonlandırdı."
+    ...
 
-| Folder                    | Description                                                                                                                                                                       |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| classification            | fastText examples                                                                                                                                                                 |
-| core                      | histogram                                                                                                                                                                         |
-| morphology                | stemming, lemmatization, diacritics analysis, POS tag analysis, morphological analysis, word generation, sentence disambiguation, informal word analysis, adding dictionary items |
-| named-entitiy-recognition | on hold                                                                                                                                                                           |
-| normalization             | document correction, noisy text normalization, spell checking                                                                                                                     |
-| tokenization              | sentence boundary detection, turkish tokenization                                                                                                                                 |
+        News classification example. Trains a new model if there is no model
+        available.
+
+        Args:
+            sentence (str): Sentence to classify.
+        
+    Sentence: Fenerbahçe bu maçı galibiyet ile sonlandırdı.
+
+    Item 1: __label__spor 
+    Score 1: -0.009194993413984776
+
+    Item 2: __label__magazin 
+    Score 2: -6.12613582611084
+
+    Item 3: __label__kültür_sanat 
+    Score 3: -6.226541996002197
+    ```
 
 ## Known Bugs
 
--   During the model training, fastText will print errors. It still works, just ignore them. If you run the code the second time, model training will be skipped and the console output will be clean of errors.
+-   During the model training, `fastText` will print errors. It still works, just ignore them.
 
 ## Changelog
 
--   29.10.2019
-    -   Zemberek 0.17.1 update.
-    -   JPype 0.7.0 update.
+-   2020-12-05
+    -   Automatic downloader for Zemberek files.
+    -   Simple CLI entry-point to run the examples with custom data. 
+    -   JPype1 v1.2.0 upgrade. This should fix some memory leak issues.
+    -   Code quality improvements.
+    -   Fixes for broken links.
+-   2019-10-29
+    -   Zemberek v0.17.1 upgrade.
+    -   JPype1 v0.7.0 upgrade.
     -   Code style changes.
     -   Bug-fixes.
     -   License is now the same with Zemberek (Apache v2.0).
--   01.12.2018
+-   2018-12-01
     -   Classification, morphology, normalization and tokenization examples.

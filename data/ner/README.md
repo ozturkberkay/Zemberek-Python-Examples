@@ -1,2 +1,2 @@
 # Zemberek Named Entity Recognition Data
-> Development of NER examples are on hold. Once they are completed, you will need to have your own training and test datasets named `ner-train` and `ner-test`.
+> Development of NER examples are on hold. Once they are completed, you will need to put your own training and test datasets named `ner-train` and `ner-test` inside this folder.

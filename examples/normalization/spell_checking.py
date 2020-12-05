@@ -3,54 +3,45 @@ Zemberek: Tokenization Example
 Documentation: https://bit.ly/2pYWVqC
 Java Code Example: https://bit.ly/31Ux0xJ
 """
-
-from os.path import join
 from typing import List
 
-from jpype import JClass, JString, getDefaultJVMPath, shutdownJVM, startJVM
+from jpype import JClass, JString, java
 
-if __name__ == '__main__':
+TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
+TurkishSpellChecker: JClass = JClass(
+    'zemberek.normalization.TurkishSpellChecker'
+)
 
-    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
 
-    startJVM(
-        getDefaultJVMPath(),
-        '-ea',
-        f'-Djava.class.path={ZEMBEREK_PATH}',
-        convertStrings=False
-    )
+def run(sentence: str) -> None:
+    """
+    Spell checking example.
 
-    TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
-    TurkishSpellChecker: JClass = JClass(
-        'zemberek.normalization.TurkishSpellChecker'
-    )
+    Args:
+        sentence (str): Sentence to check for spelling errors.
+    """
 
     morphology: TurkishMorphology = TurkishMorphology.createWithDefaults()
 
     spell_checker: TurkishSpellChecker = TurkishSpellChecker(morphology)
 
-    words: List[str] = ['Ankar\'yya', 'bugn', 'gidyorum']
+    words: List[str] = sentence.split(' ')
+    fixed_words: List[str] = []
 
     for word in words:
-        print(
-            f'\n{word}:'
-            f' {"Correct" if spell_checker.check(JString(word)) else "Wrong"}'
-        )
+        if not spell_checker.check(JString(word)):
+            print(f'Spelling error: {word}')
+            suggestions: java.util.ArrayList = spell_checker.suggestForWord(
+                JString(word)
+            )
+            if suggestions:
+                print(f'\nSuggestions for "{word}":')
+                for suggestion in suggestions:
+                    print(f' | {suggestion}')
+                fixed_words.append(str(suggestions[0]))
+                continue
+            else:
+                print(f'No suggestions found for "{word}".')
+        fixed_words.append(word)
 
-    for word in words:
-        suggestions = spell_checker.suggestForWord(JString(word))
-        if suggestions:
-            print(f'\nSuggestions for "{word}":')
-            for suggestion in suggestions:
-                print(f' | {suggestion}')
-        else:
-            print(f'No suggestions found for "{word}".')
-
-    for i, word in enumerate(words):
-        if spell_checker.suggestForWord(JString(word)):
-            if not spell_checker.check(JString(word)):
-                words[i] = str(spell_checker.suggestForWord(JString(word))[0])
-
-    print('\nFixed sentence:', ' '.join(words))
-
-    shutdownJVM()
+    print('\nFixed sentence:', ' '.join(fixed_words))

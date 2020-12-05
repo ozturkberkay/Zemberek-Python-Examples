@@ -1,41 +1,34 @@
-
 """
 Zemberek: Disambiguating Sentences Example
 Documentation: https://bit.ly/36mO5Uu
 Java Code Example: https://bit.ly/31UfDwI
 """
+from typing import List
 
-from os.path import join
+from jpype import JClass, java
 
-from jpype import JClass, getDefaultJVMPath, java, shutdownJVM, startJVM
+__all__: List[str] = ['run']
 
-if __name__ == '__main__':
+TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
 
-    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
 
-    startJVM(
-        getDefaultJVMPath(),
-        '-ea',
-        f'-Djava.class.path={ZEMBEREK_PATH}',
-        convertStrings=False
-    )
+def run(sentence: str) -> None:
+    """
+    Sentence disambiguation example.
 
-    TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
-    Paths: JClass = JClass('java.nio.file.Paths')
+    Args:
+        sentence (str): Sentence to disambiguate.
+    """
 
     morphology: TurkishMorphology = TurkishMorphology.createWithDefaults()
 
-    sentence: str = 'Bol baharatlı bir yemek yaptıralım.'
-
-    print(f'Sentence = {sentence}')
-
     analysis: java.util.ArrayList = morphology.analyzeSentence(sentence)
 
-    results: java.util.ArrayList = (
-        morphology.disambiguate(sentence, analysis).bestAnalysis()
-    )
+    results: java.util.ArrayList = morphology.disambiguate(
+        sentence, analysis
+    ).bestAnalysis()
 
-    for i, result in enumerate(results, start=1):
+    for i, result in enumerate(results, 1):
         print(
             f'\nAnalysis {i}: {str(result.formatLong())}'
             f'\nStems {i}:'
@@ -43,5 +36,3 @@ if __name__ == '__main__':
             f'\nLemmas {i}:'
             f'{", ".join([str(stem) for stem in result.getLemmas()])}'
         )
-
-    shutdownJVM()

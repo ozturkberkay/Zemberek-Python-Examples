@@ -3,39 +3,49 @@ Zemberek: Word Generation Example
 Documentation: https://bit.ly/2otE6LW
 Java Code Example: https://bit.ly/32TWKvb
 """
-
-from os.path import join
 from typing import List
 
-from jpype import (JClass, JString, getDefaultJVMPath, java, shutdownJVM,
-                   startJVM)
+from jpype import (
+    JClass,
+    JString,
+    java,
+)
 
-if __name__ == '__main__':
+__all__: List[str] = ['run']
 
-    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
+TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
+DictionaryItem: JClass = JClass('zemberek.morphology.lexicon.DictionaryItem')
 
-    startJVM(
-        getDefaultJVMPath(),
-        '-ea',
-        f'-Djava.class.path={ZEMBEREK_PATH}',
-        convertStrings=False
-    )
+
+def _generate_nouns(root_word: str) -> None:
+    """
+    Generates inflections of the given root word using possessive and case
+    suffix combinations.
+
+    Args:
+        root_word (str): Root word to generate inflections from.
+    """
 
     print('\nGenerating nouns.\n')
 
     number: List[JString] = [JString('A3sg'), JString('A3pl')]
     possessives: List[JString] = [
-        JString('P1sg'), JString('P2sg'), JString('P3sg')
+        JString('P1sg'),
+        JString('P2sg'),
+        JString('P3sg'),
     ]
     cases: List[JString] = [JString('Dat'), JString('Loc'), JString('Abl')]
 
-    TurkishMorphology: JClass = JClass('zemberek.morphology.TurkishMorphology')
-
     morphology: TurkishMorphology = (
-        TurkishMorphology.builder().setLexicon('armut').disableCache().build()
+        TurkishMorphology.builder()
+        .setLexicon(root_word)
+        .disableCache()
+        .build()
     )
 
-    item = morphology.getLexicon().getMatchingItems('armut').get(0)
+    item: DictionaryItem = (
+        morphology.getLexicon().getMatchingItems(root_word).get(0)
+    )
 
     for number_m in number:
         for possessive_m in possessives:
@@ -45,21 +55,36 @@ if __name__ == '__main__':
                 ):
                     print(str(result.surface))
 
+
+def _generate_verbs(infinitive: str, stem: str) -> None:
+    """
+    Generates words from a given stem.
+
+    Args:
+        infinitive (str): Infinitive form of the verb to create the lexicon.
+        stem (str): Stem to generate words for.
+    """
+
     print('\nGenerating verbs.\n')
 
     positive_negatives: List[JString] = [JString(''), JString('Neg')]
     times: List[JString] = [
-        'Imp', 'Aor', 'Past', 'Prog1', 'Prog2', 'Narr', 'Fut'
+        'Imp',
+        'Aor',
+        'Past',
+        'Prog1',
+        'Prog2',
+        'Narr',
+        'Fut',
     ]
-    people: List[JString] = [
-        'A1sg', 'A2sg', 'A3sg', 'A1pl', 'A2pl', 'A3pl'
-    ]
+    people: List[JString] = ['A1sg', 'A2sg', 'A3sg', 'A1pl', 'A2pl', 'A3pl']
 
-    morphology: TurkishMorphology = (
-        TurkishMorphology.builder().setLexicon('okumak').disableCache().build()
+    morphology = (
+        TurkishMorphology.builder()
+        .setLexicon(infinitive)
+        .disableCache()
+        .build()
     )
-
-    stem: str = 'oku'
 
     for pos_neg in positive_negatives:
         for time in times:
@@ -71,16 +96,27 @@ if __name__ == '__main__':
                     seq.add(JString(time))
                 if person:
                     seq.add(JString(person))
-                results = list(morphology.getWordGenerator().generate(
-                    JString(stem),
-                    seq
-                ))
+                results = list(
+                    morphology.getWordGenerator().generate(JString(stem), seq)
+                )
                 if not results:
-                    print((
+                    print(
                         f'Cannot generate Stem = ["{stem}"]'
                         f'\n | Morphemes = {[str(morph) for morph in seq]}'
-                    ))
+                    )
                     continue
                 print(' '.join(str(result.surface) for result in results))
 
-    shutdownJVM()
+
+def run(noun_root_word: str, verb_infinitive: str, verb_stem: str) -> None:
+    """
+    Generate nouns and verbs.
+
+    Args:
+        noun_root_word (str): Root word to generate inflections from.
+        verb_infinitive (str): Infinitive form of the verb to create the
+            lexicon for verb generation.
+        verb_stem (str): Stem to generate verbs for.
+    """
+    _generate_nouns(noun_root_word)
+    _generate_verbs(verb_infinitive, verb_stem)

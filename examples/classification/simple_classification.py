@@ -4,82 +4,84 @@ Documentation: https://bit.ly/2BNKPmP
 Java Code Example: https://bit.ly/2JsoO1i
 fastText Documentation: https://bit.ly/31YVBS8
 """
+import subprocess
+from pathlib import Path
+from typing import List
 
-from os.path import isfile, join
-from subprocess import call
+from jpype import JClass, JString, java
 
-from jpype import JClass, getDefaultJVMPath, java, shutdownJVM, startJVM
+from examples import DATA_PATH, JAVA_PATH, ZEMBEREK_PATH
 
-if __name__ == '__main__':
+__all__: List[str] = ['run']
 
-    ZEMBEREK_PATH: str = join('..', '..', 'bin', 'zemberek-full.jar')
 
-    startJVM(
-        getDefaultJVMPath(),
-        '-ea',
-        f'-Djava.class.path={ZEMBEREK_PATH}',
-        convertStrings=False
+FastTextClassifier: JClass = JClass(
+    'zemberek.classification.FastTextClassifier'
+)
+TurkishTokenizer: JClass = JClass('zemberek.tokenization.TurkishTokenizer')
+
+
+def run(sentence: str) -> None:
+    """
+    News classification example. Trains a new model if there are no model
+    available.
+
+    Args:
+        sentence (str): Sentence to classify.
+    """
+    label_data_path: Path = DATA_PATH.joinpath(
+        'classification', 'news-title-category-set'
     )
+    model_path: Path = label_data_path.with_suffix('.model')
 
-    FastTextClassifier: JClass = JClass(
-        'zemberek.classification.FastTextClassifier'
-    )
-    TurkishTokenizer: JClass = JClass(
-        'zemberek.tokenization.TurkishTokenizer'
-    )
-    ScoredItem: JClass = JClass(
-        'zemberek.core.ScoredItem'
-    )
-    Paths: JClass = JClass(
-        'java.nio.file.Paths'
-    )
-
-    path: str = join('..', '..', 'data', 'classification')
-
-    if not isfile(join(path, 'news-title-category-set.model')):
+    if not model_path.is_file():
 
         print('Could not find a model. Training a new one...')
 
-        if not isfile(join(path, 'news-title-category-set')):
+        if not label_data_path.is_file():
             raise FileNotFoundError(
                 'Could not train a model!'
                 ' Please include news-title-category-set!'
             )
 
-        call([
-            'java',
-            '-jar', '../../bin/zemberek-full.jar',
-            'TrainClassifier',
-            '-i', '../../data/classification/news-title-category-set',
-            '-o', '../../data/classification/news-title-category-set.model',
-            '--learningRate', '0.1',
-            '--epochCount', '50',
-            '--applyQuantization',
-            '--cutOff', '15000'
-        ])
-
-    classifier: FastTextClassifier = FastTextClassifier.load(
-        Paths.get(
-            join(
-                '..', '..', 'data', 'classification',
-                'news-title-category-set.model'
-            )
+        subprocess.run(
+            [
+                JAVA_PATH,
+                '-jar',
+                ZEMBEREK_PATH,
+                'TrainClassifier',
+                '-i',
+                label_data_path,
+                '-o',
+                model_path,
+                '--learningRate',
+                '0.1',
+                '--epochCount',
+                '50',
+                '--applyQuantization',
+                '--cutOff',
+                '15000',
+            ],
+            check=True,
         )
-    )
 
-    sentence: str = 'Beşiktaş berabere kaldı.'
+    classifier: FastTextClassifier = FastTextClassifier.load(model_path)
 
-    processed: str = ' '.join([
-        str(token)
-        for token in TurkishTokenizer.DEFAULT.tokenizeToStrings(sentence)
-    ]).lower()
+    processed: str = ' '.join(
+        [
+            str(token)
+            for token in TurkishTokenizer.DEFAULT.tokenizeToStrings(
+                JString(sentence)
+            )
+        ]
+    ).lower()
 
     results: java.util.ArrayList = classifier.predict(processed, 3)
+
+    print(f'Sentence: {sentence}')
 
     for i, result in enumerate(results):
         print(
             f'\nItem {i + 1}: {result.item}',
-            f'\nScore {i + 1}: {result.score}'
+            f'\nScore {i + 1}: {result.score}',
         )
-
-    shutdownJVM()
