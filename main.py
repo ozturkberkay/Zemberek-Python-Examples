@@ -3,9 +3,9 @@ import importlib
 from pathlib import Path
 from typing import List
 
-from examples import JVM_KWARGS
+from jpype import shutdownJVM, startJVM
 
-from jpype import startJVM, shutdownJVM
+from examples import JVM_KWARGS
 
 
 def get_runnable_modules() -> List[str]:

@@ -8,9 +8,8 @@ import subprocess
 from pathlib import Path
 from typing import List
 
-from jpype import JClass, JString, java
-
 from examples import DATA_PATH, JAVA_PATH, ZEMBEREK_PATH
+from jpype import JClass, JString, java
 
 __all__: List[str] = ['run']
 
@@ -36,7 +35,10 @@ def run(sentence: str) -> None:
 
     if not model_path.is_file():
 
-        print('Could not find a model. Training a new one...')
+        print(
+            'Could not find a model, training a new one. FastText will print'
+            ' some errors, do not terminate the process!'
+        )
 
         if not label_data_path.is_file():
             raise FileNotFoundError(
@@ -46,14 +48,14 @@ def run(sentence: str) -> None:
 
         subprocess.run(
             [
-                JAVA_PATH,
+                str(JAVA_PATH.absolute()),
                 '-jar',
-                ZEMBEREK_PATH,
+                str(ZEMBEREK_PATH.absolute()),
                 'TrainClassifier',
                 '-i',
-                label_data_path,
+                str(label_data_path.absolute()),
                 '-o',
-                model_path,
+                str(model_path.absolute()),
                 '--learningRate',
                 '0.1',
                 '--epochCount',

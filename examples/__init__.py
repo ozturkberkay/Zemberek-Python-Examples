@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 from typing import Dict, List, Optional, Union
+
 from jpype import getDefaultJVMPath
 
 __all__: List[str] = ['ZEMBEREK_PATH', 'DATA_PATH', 'JVM_KWARGS', 'JAVA_PATH']
